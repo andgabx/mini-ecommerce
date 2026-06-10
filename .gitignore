@@ -1,0 +1,20 @@
+# Build
+build/
+out/
+
+# Gradle cache
+.gradle/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Dev database files
+*.db
+*.db-shm
+*.db-wal
+
+# OS
+.DS_Store
