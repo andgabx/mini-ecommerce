@@ -1,10 +1,9 @@
 package com.example
 
-import io.ktor.server.application.Application
+import io.ktor.server.application.*
 
-fun Application.rootModule() {
+fun Application.configureApp(jwtSecret: String, jwtExpirationMs: Long) {
     configureStatusPages()
     configureSerialization()
-    configureSecurity()
-    configureRouting()
+    configureRouting(jwtSecret, jwtExpirationMs)
 }
