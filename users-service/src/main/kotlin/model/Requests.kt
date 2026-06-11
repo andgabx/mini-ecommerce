@@ -22,3 +22,9 @@ data class LoginResponse(
     val email: String,
     val role: String
 )
+
+data class LoginData(
+    val userId: Int,
+    val email: String,
+    val role: String
+)

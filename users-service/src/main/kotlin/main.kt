@@ -1,6 +1,7 @@
 package com.example
 
 import com.example.data.DatabaseFactory
+import com.example.data.UserRepositoryImpl
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.io.FileInputStream
@@ -16,20 +17,18 @@ fun main() {
     val keyAlias         = System.getenv("KEY_ALIAS") ?: "ecommerce"
 
     DatabaseFactory.init(dbPath)
+    val repo = UserRepositoryImpl()
 
-    val module: Application.() -> Unit = { configureApp(jwtSecret, jwtExpirationMs) }
+    val module: Application.() -> Unit = { configureApp(jwtSecret, jwtExpirationMs, repo) }
 
     val server = if (keystorePath != null) {
         val keyStore = KeyStore.getInstance("JKS").apply {
             FileInputStream(keystorePath).use { load(it, keystorePassword.toCharArray()) }
         }
         embeddedServer(Netty, configure = {
-            sslConnector(
-                keyStore           = keyStore,
-                keyAlias           = keyAlias,
-                keyStorePassword   = { keystorePassword.toCharArray() },
-                privateKeyPassword = { keystorePassword.toCharArray() }
-            ) { this.port = port }
+            sslConnector(keyStore, keyAlias, { keystorePassword.toCharArray() }, { keystorePassword.toCharArray() }) {
+                this.port = port
+            }
         }, module = module)
     } else {
         embeddedServer(Netty, port = port, module = module)

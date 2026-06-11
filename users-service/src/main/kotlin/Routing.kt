@@ -1,7 +1,6 @@
 package com.example
 
 import com.example.data.UserRepository
-import com.example.data.UsersTable
 import com.example.model.LoginRequest
 import com.example.model.LoginResponse
 import com.example.model.RegisterRequest
@@ -11,9 +10,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(jwtSecret: String, jwtExpirationMs: Long) {
-    val repo = UserRepository()
-
+fun Application.configureRouting(jwtSecret: String, jwtExpirationMs: Long, repo: UserRepository) {
     routing {
 
         get("/health") {
@@ -24,38 +21,28 @@ fun Application.configureRouting(jwtSecret: String, jwtExpirationMs: Long) {
 
             post("/register") {
                 val req = call.receive<RegisterRequest>()
-
                 if (req.name.isBlank() || req.email.isBlank() || req.password.length < 6) {
                     call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Dados inválidos: nome e email obrigatórios, senha mínima 6 caracteres"))
                     return@post
                 }
-
                 val user = repo.create(req.name, req.email, req.password)
                     ?: return@post call.respond(HttpStatusCode.Conflict, mapOf("error" to "Email já cadastrado"))
-
                 call.respond(HttpStatusCode.Created, user)
             }
 
             post("/login") {
                 val req = call.receive<LoginRequest>()
-
-                val row = repo.validateCredentials(req.email, req.password)
+                val loginData = repo.validateCredentials(req.email, req.password)
                     ?: return@post call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "Credenciais inválidas"))
 
                 val token = generateJwt(
-                    userId       = row[UsersTable.id],
-                    email        = row[UsersTable.email],
-                    role         = row[UsersTable.role],
+                    userId       = loginData.userId,
+                    email        = loginData.email,
+                    role         = loginData.role,
                     secret       = jwtSecret,
                     expirationMs = jwtExpirationMs
                 )
-
-                call.respond(LoginResponse(
-                    token  = token,
-                    userId = row[UsersTable.id],
-                    email  = row[UsersTable.email],
-                    role   = row[UsersTable.role]
-                ))
+                call.respond(LoginResponse(token, loginData.userId, loginData.email, loginData.role))
             }
 
             get("/{id}") {
@@ -69,10 +56,8 @@ fun Application.configureRouting(jwtSecret: String, jwtExpirationMs: Long) {
                     call.respond(HttpStatusCode.Forbidden, mapOf("error" to "Acesso negado"))
                     return@get
                 }
-
                 val user = repo.findById(requestedId)
                     ?: return@get call.respond(HttpStatusCode.NotFound, mapOf("error" to "Usuário não encontrado"))
-
                 call.respond(user)
             }
         }
