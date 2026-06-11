@@ -1,7 +1,7 @@
 package com.example
 
 import com.example.data.DatabaseFactory
-import com.example.data.ProductRepository
+import com.example.data.ProductRepositoryImpl
 import com.example.replication.ReplicationClient
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -18,7 +18,7 @@ fun main() {
     val keyAlias         = System.getenv("KEY_ALIAS") ?: "ecommerce"
 
     DatabaseFactory.init(dbPath)
-    val repo = ProductRepository()
+    val repo = ProductRepositoryImpl()
     val replicationClient = if (serviceRole == "primary" && replicaUrl != null) {
         ReplicationClient(replicaUrl, keystorePath, keystorePassword)
     } else null
