@@ -16,5 +16,8 @@ out/
 *.db-shm
 *.db-wal
 
+# TLS keystore (gerado localmente)
+certs/*.jks
+
 # OS
 .DS_Store
