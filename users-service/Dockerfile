@@ -1,7 +1,7 @@
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM gradle:9.1.0-jdk21 AS build
 WORKDIR /app
 COPY . .
-RUN ./gradlew installDist --no-daemon
+RUN gradle installDist --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app

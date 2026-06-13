@@ -18,7 +18,6 @@ fun main() {
     val jwtSecret        = System.getenv("JWT_SECRET") ?: "dev_secret_change_in_prod"
     val keystorePath     = System.getenv("KEYSTORE_PATH")
     val keystorePassword = System.getenv("KEYSTORE_PASSWORD") ?: "keystorepass"
-    val keyAlias         = System.getenv("KEY_ALIAS") ?: "ecommerce"
 
     ServiceRegistry.init(
         usersUrl           = System.getenv("USERS_SERVICE_URL")        ?: "http://localhost:5001",
@@ -30,20 +29,7 @@ fun main() {
     val httpClient = buildHttpClient(keystorePath, keystorePassword)
     val module: Application.() -> Unit = { configureApp(jwtSecret, httpClient) }
 
-    val server = if (keystorePath != null) {
-        val keyStore = KeyStore.getInstance("JKS").apply {
-            FileInputStream(keystorePath).use { load(it, keystorePassword.toCharArray()) }
-        }
-        embeddedServer(Netty, configure = {
-            sslConnector(keyStore, keyAlias, { keystorePassword.toCharArray() }, { keystorePassword.toCharArray() }) {
-                this.port = port
-            }
-        }, module = module)
-    } else {
-        embeddedServer(Netty, port = port, module = module)
-    }
-
-    server.start(wait = true)
+    embeddedServer(Netty, port = port, module = module).start(wait = true)
 }
 
 private fun buildHttpClient(keystorePath: String?, keystorePassword: String): HttpClient {

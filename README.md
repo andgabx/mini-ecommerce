@@ -182,3 +182,31 @@ mini-ecommerce/
 ├── orders-service/        ← porta 5003
 └── docker-compose.yml
 ```
+
+---
+
+## Bônus implementados
+
+### Dashboard de monitoramento
+
+Acesse no browser com o sistema rodando:
+
+```
+http://localhost:8080/dashboard
+```
+
+Exibe o status de todos os serviços em tempo real (atualiza a cada 5 segundos), com indicador verde/vermelho, URL e contagem de falhas consecutivas.
+
+O endpoint JSON também está disponível:
+
+```bash
+curl http://localhost:8080/status
+```
+
+### Docker Compose
+
+Toda a infraestrutura sobe com um único comando (`docker-compose up --build`), incluindo os 5 containers com variáveis de ambiente e volumes configurados.
+
+### TLS entre serviços
+
+Toda a comunicação interna entre os containers usa HTTPS com certificado self-signed gerado via `certs/generate.sh`. O gateway e os serviços compartilham o mesmo `keystore.jks`.

@@ -16,7 +16,12 @@ fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
 
         get("/status") {
             call.respond(ServiceRegistry.allServices.map { s ->
-                mapOf("name" to s.name, "url" to s.url, "status" to if (s.isUp) "UP" else "DOWN", "failures" to s.consecutiveFailures)
+                mapOf(
+                    "name"     to s.name,
+                    "url"      to s.url,
+                    "status"   to if (s.isUp) "UP" else "DOWN",
+                    "failures" to s.consecutiveFailures.toString()
+                )
             })
         }
 
@@ -92,7 +97,7 @@ private suspend fun ApplicationCall.guardedProxy(
 
     val method = request.httpMethod
     val body = if (method == HttpMethod.Post || method == HttpMethod.Put) {
-        request.receiveChannel().toByteArray()
+        receive<ByteArray>()
     } else null
 
     val response = client.request("${service.url}$path") {
@@ -108,5 +113,5 @@ private suspend fun ApplicationCall.guardedProxy(
         }
     }
 
-    respond(response.status, response.bodyAsBytes())
+    respondBytes(response.bodyAsBytes(), status = response.status)
 }
