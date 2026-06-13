@@ -3,6 +3,7 @@ package com.example
 import com.example.data.DatabaseFactory
 import com.example.data.ProductRepositoryImpl
 import com.example.replication.ReplicationClient
+import io.ktor.server.application.Application
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.io.FileInputStream
