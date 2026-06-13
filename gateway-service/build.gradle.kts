@@ -25,7 +25,6 @@ dependencies {
     implementation(ktorLibs.server.auth.jwt)
     implementation(libs.logback.classic)
 
-    // Client (proxy e heartbeat)
     implementation(ktorLibs.client.core)
     implementation(ktorLibs.client.cio)
     implementation(ktorLibs.client.contentNegotiation)

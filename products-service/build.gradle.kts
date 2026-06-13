@@ -23,12 +23,10 @@ dependencies {
     implementation(ktorLibs.server.statusPages)
     implementation(libs.logback.classic)
 
-    // Database
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.sqlite.jdbc)
 
-    // HTTP Client (replicação entre instâncias)
     implementation(ktorLibs.client.core)
     implementation(ktorLibs.client.cio)
     implementation(ktorLibs.client.contentNegotiation)

@@ -25,13 +25,11 @@ dependencies {
     implementation(ktorLibs.server.statusPages)
     implementation(libs.logback.classic)
 
-    // Database
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
     implementation(libs.exposed.jdbc)
     implementation(libs.sqlite.jdbc)
 
-    // Password hashing
     implementation(libs.jbcrypt)
 
     testImplementation(kotlin("test"))

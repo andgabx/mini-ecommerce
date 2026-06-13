@@ -14,7 +14,6 @@ import io.ktor.server.routing.*
 fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
     routing {
 
-        // ── Público ─────────────────────────────────────────────────────────
         post("/users/register") {
             call.guardedProxy(httpClient, ServiceRegistry.usersService, "/users/register")
         }
@@ -31,7 +30,6 @@ fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
             call.guardedProxy(httpClient, service, "/products/$id")
         }
 
-        // ── Protegido (requer JWT) ───────────────────────────────────────────
         get("/users/{id}") {
             val claims = call.requireJwt(jwtSecret) ?: return@get
             val id = call.parameters["id"]
