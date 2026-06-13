@@ -14,6 +14,16 @@ import io.ktor.server.routing.*
 fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
     routing {
 
+        get("/status") {
+            call.respond(ServiceRegistry.allServices.map { s ->
+                mapOf("name" to s.name, "url" to s.url, "status" to if (s.isUp) "UP" else "DOWN", "failures" to s.consecutiveFailures)
+            })
+        }
+
+        get("/dashboard") {
+            call.respondText(buildDashboardHtml(), ContentType.Text.Html)
+        }
+
         post("/users/register") {
             call.guardedProxy(httpClient, ServiceRegistry.usersService, "/users/register")
         }
