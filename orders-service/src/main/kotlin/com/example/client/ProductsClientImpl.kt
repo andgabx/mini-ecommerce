@@ -11,6 +11,7 @@ import java.io.FileInputStream
 import java.security.KeyStore
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
+import kotlinx.serialization.json.Json
 
 class ProductsClientImpl(
     private val baseUrl: String,
@@ -19,7 +20,7 @@ class ProductsClientImpl(
 ) : ProductsClient {
 
     private val httpClient = HttpClient(CIO) {
-        install(ContentNegotiation) { json() }
+        install(ContentNegotiation) { json(Json { ignoreUnknownKeys = true }) }
         if (keystorePath != null) {
             engine {
                 https {

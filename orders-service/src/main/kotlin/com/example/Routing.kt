@@ -18,6 +18,14 @@ fun Application.configureRouting(repo: OrderRepository, productsClient: Products
 
         route("/orders") {
 
+            get {
+                if (call.request.headers["X-User-Role"] != "admin") {
+                    call.respond(HttpStatusCode.Forbidden, mapOf("error" to "Acesso negado"))
+                    return@get
+                }
+                call.respond(repo.findAll())
+            }
+
             post {
                 val userId = call.request.headers["X-User-Id"]?.toIntOrNull()
                     ?: return@post call.respond(HttpStatusCode.Unauthorized, mapOf("error" to "Usuário não identificado"))

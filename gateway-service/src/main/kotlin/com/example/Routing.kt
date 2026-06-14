@@ -29,6 +29,10 @@ fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
             call.respondText(buildDashboardHtml(), ContentType.Text.Html)
         }
 
+        get("/ui") {
+            call.respondText(buildUiHtml(), ContentType.Text.Html)
+        }
+
         post("/users/register") {
             call.guardedProxy(httpClient, ServiceRegistry.usersService, "/users/register")
         }
@@ -45,6 +49,14 @@ fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
             call.guardedProxy(httpClient, service, "/products/$id")
         }
 
+        get("/users") {
+            val claims = call.requireJwt(jwtSecret) ?: return@get
+            if (claims.role != "admin") {
+                call.respond(HttpStatusCode.Forbidden, mapOf("error" to "Acesso negado"))
+                return@get
+            }
+            call.guardedProxy(httpClient, ServiceRegistry.usersService, "/users", claims)
+        }
         get("/users/{id}") {
             val claims = call.requireJwt(jwtSecret) ?: return@get
             val id = call.parameters["id"]
@@ -60,6 +72,14 @@ fun Application.configureRouting(jwtSecret: String, httpClient: HttpClient) {
         }
         post("/orders") {
             val claims = call.requireJwt(jwtSecret) ?: return@post
+            call.guardedProxy(httpClient, ServiceRegistry.ordersService, "/orders", claims)
+        }
+        get("/orders") {
+            val claims = call.requireJwt(jwtSecret) ?: return@get
+            if (claims.role != "admin") {
+                call.respond(HttpStatusCode.Forbidden, mapOf("error" to "Acesso negado"))
+                return@get
+            }
             call.guardedProxy(httpClient, ServiceRegistry.ordersService, "/orders", claims)
         }
         get("/orders/{userId}") {

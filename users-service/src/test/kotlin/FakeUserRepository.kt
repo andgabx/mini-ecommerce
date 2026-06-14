@@ -23,6 +23,8 @@ class FakeUserRepository : UserRepository {
         return user
     }
 
+    override fun findAll(): List<User> = records.map { it.user }
+
     override fun findById(id: Int): User? =
         records.find { it.user.id == id }?.user
 

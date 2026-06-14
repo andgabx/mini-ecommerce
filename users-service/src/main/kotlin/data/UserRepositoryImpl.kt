@@ -28,6 +28,10 @@ class UserRepositoryImpl : UserRepository {
         }
     }
 
+    override fun findAll(): List<User> = transaction {
+        UsersTable.selectAll().map { it.toUser() }
+    }
+
     override fun findById(id: Int): User? = transaction {
         UsersTable.selectAll()
             .where { UsersTable.id eq id }

@@ -19,6 +19,14 @@ fun Application.configureRouting(jwtSecret: String, jwtExpirationMs: Long, repo:
 
         route("/users") {
 
+            get {
+                if (call.request.headers["X-User-Role"] != "admin") {
+                    call.respond(HttpStatusCode.Forbidden, mapOf("error" to "Acesso negado"))
+                    return@get
+                }
+                call.respond(repo.findAll())
+            }
+
             post("/register") {
                 val req = call.receive<RegisterRequest>()
                 if (req.name.isBlank() || req.email.isBlank() || req.password.length < 6) {

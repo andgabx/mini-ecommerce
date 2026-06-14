@@ -25,6 +25,12 @@ class OrderRepositoryImpl : OrderRepository {
             .first()
     }
 
+    override fun findAll(): List<Order> = transaction {
+        OrdersTable.selectAll()
+            .orderBy(OrdersTable.userId, SortOrder.ASC)
+            .map { it.toOrder() }
+    }
+
     override fun findByUserId(userId: Int): List<Order> = transaction {
         OrdersTable.selectAll()
             .where { OrdersTable.userId eq userId }

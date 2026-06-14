@@ -14,5 +14,7 @@ class FakeOrderRepository : OrderRepository {
         return order
     }
 
+    override fun findAll(): List<Order> = orders.toList()
+
     override fun findByUserId(userId: Int): List<Order> = orders.filter { it.userId == userId }
 }
